@@ -1,0 +1,15 @@
+---
+title: What time is it over there?
+author: ~
+date: '2017-07-18'
+slug: what-time-is-it-over-there
+categories: ["Projects"]
+tags: []
+---
+
+#Building a R-package
+Packages are a robust and convenient way of grouping together R code, documentation and data. There are a number of good reasons for building a package but foremost among those are code reuse and code sharing (which is also an important way to establish a reputation in the R community).
+
+#Our project: timezone and flight time calculator
+Ever since going overseas, I've had to rely on the 
+
