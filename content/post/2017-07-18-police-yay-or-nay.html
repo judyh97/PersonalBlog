@@ -24,7 +24,27 @@ tags: []
 ##  [6] &quot;ager&quot;      &quot;marital2&quot;  &quot;hincome&quot;   &quot;popsize&quot;   &quot;region&quot;   
 ## [11] &quot;msa&quot;       &quot;direl&quot;     &quot;weapon&quot;    &quot;weapcat&quot;   &quot;newcrime&quot; 
 ## [16] &quot;newoff&quot;    &quot;injury&quot;    &quot;treatment&quot; &quot;locationr&quot; &quot;notify&quot;</code></pre>
-<p>Our initial list of explanatory variables, all categorical except for year: | Variable | Explanation | | ——– | :———: | | year | Year of data collection | | gender | Gender of respondent | | race1r | Race of respondent | | hispanic | Hispanic origin | | ethnic1r | Race/Hispanic origin | | ager | Age of respondent | | marital2 | Marital Status | | hincome | Household Income | | popsize | Population size of crime location | | region | Region of crime location | | msa | Urban, Suburban, Rural | | direl | Victim-offender Relationship | | weapon | Weapon Use | | weapcat | Weapon Type | | newcrime | Aggregate Type of crime, i.e. Violent Victimization/ Theft | | newoff | Type of crime | | injury | Injured/ Not injured | | treatment | Medical Treatment for injuries | | locationr | Location of Incident, i.e School, Public, Home… |</p>
+<p>Our initial list of explanatory variables, all categorical except for year: 1. year | Year of data collection</p>
+<ol start="2" style="list-style-type: decimal">
+<li><p>gender | Gender of respondent</p></li>
+<li><p>race1r | Race of respondent</p></li>
+<li><p>hispanic | Hispanic origin</p></li>
+<li><p>ethnic1r | Race/Hispanic origin</p></li>
+<li><p>ager | Age of respondent</p></li>
+<li><p>marital2 | Marital Status</p></li>
+<li><p>hincome | Household Income</p></li>
+<li><p>popsize | Population size of crime location</p></li>
+<li><p>region | Region of crime location</p></li>
+<li><p>msa | Urban, Suburban, Rural</p></li>
+<li><p>direl | Victim-offender Relationship</p></li>
+<li><p>weapon | Weapon Use</p></li>
+<li><p>weapcat | Weapon Type</p></li>
+<li><p>newcrime | Aggregate Type of crime, i.e. Violent Victimization/ Theft</p></li>
+<li><p>newoff | Type of crime</p></li>
+<li><p>injury | Injured/ Not injured</p></li>
+<li><p>treatment | Medical Treatment for injuries</p></li>
+<li><p>locationr | Location of Incident, i.e School, Public, Home…</p></li>
+</ol>
 <p>The dependent variable we’re analyzing is <strong>notify</strong>: whether the crime was reported to the police or not.</p>
 </div>
 <div id="explanatory-analysis" class="section level1">
@@ -58,95 +78,95 @@ summary(fit)</code></pre>
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -2.3303  -1.0819   0.5588   1.0285   2.3462  
+## -2.3200  -1.0796   0.5669   1.0253   2.3516  
 ## 
 ## Coefficients: (2 not defined because of singularities)
 ##                     Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept)         1.681846   0.160513  10.478  &lt; 2e-16 ***
-## genderFemale       -0.244093   0.034467  -7.082 1.42e-12 ***
-## race1rBlack        -0.155207   0.050206  -3.091  0.00199 ** 
-## race1rOther         0.213451   0.071863   2.970  0.00298 ** 
-## ager15-17          -0.418004   0.073751  -5.668 1.45e-08 ***
-## ager18-20          -0.419685   0.077751  -5.398 6.75e-08 ***
-## ager21-24          -0.553356   0.078080  -7.087 1.37e-12 ***
-## ager25-34          -0.811630   0.073532 -11.038  &lt; 2e-16 ***
-## ager35-49          -0.731066   0.075850  -9.638  &lt; 2e-16 ***
-## ager50-64          -0.646124   0.084493  -7.647 2.06e-14 ***
-## ager&gt;65            -0.566580   0.124971  -4.534 5.80e-06 ***
-## marital2Married    -0.329264   0.049152  -6.699 2.10e-11 ***
-## marital2Widowed    -0.340034   0.128091  -2.655  0.00794 ** 
-## marital2Divorced   -0.179173   0.057941  -3.092  0.00199 ** 
-## marital2Separated   0.105011   0.074931   1.401  0.16108    
-## marital288         -0.604095   0.301250  -2.005  0.04493 *  
-## hincome7500-14999  -0.061207   0.064228  -0.953  0.34061    
-## hincome15000-24999  0.134294   0.062912   2.135  0.03279 *  
-## hincome25000-34999  0.001899   0.065167   0.029  0.97675    
-## hincome35000-49999 -0.023227   0.064174  -0.362  0.71740    
-## hincome50000-74999  0.062432   0.066031   0.945  0.34441    
-## hincome&gt;75000       0.127329   0.066416   1.917  0.05522 .  
-## regionMidwest      -0.054561   0.051488  -1.060  0.28929    
-## regionSouth        -0.093881   0.049452  -1.898  0.05764 .  
-## regionWest          0.043324   0.050901   0.851  0.39468    
-## msaSuburban        -0.100502   0.035318  -2.846  0.00443 ** 
-## msaRural           -0.146621   0.051638  -2.839  0.00452 ** 
-## direlRelative      -0.006112   0.072953  -0.084  0.93324    
-## direlAcquain       -0.046835   0.055944  -0.837  0.40250    
-## direlStranger      -0.318311   0.058582  -5.434 5.52e-08 ***
-## weaponN             0.131589   0.094475   1.393  0.16367    
-## weapcatFirearm     -0.668823   0.079689  -8.393  &lt; 2e-16 ***
-## weapcatKnife       -0.068536   0.080300  -0.854  0.39338    
+## (Intercept)         1.641352   0.162094  10.126  &lt; 2e-16 ***
+## genderFemale       -0.258509   0.034571  -7.478 7.56e-14 ***
+## race1rBlack        -0.200679   0.050359  -3.985 6.75e-05 ***
+## race1rOther         0.238371   0.072851   3.272 0.001068 ** 
+## ager15-17          -0.358226   0.072620  -4.933 8.10e-07 ***
+## ager18-20          -0.338447   0.077342  -4.376 1.21e-05 ***
+## ager21-24          -0.480199   0.077702  -6.180 6.41e-10 ***
+## ager25-34          -0.722749   0.073012  -9.899  &lt; 2e-16 ***
+## ager35-49          -0.647997   0.075563  -8.576  &lt; 2e-16 ***
+## ager50-64          -0.539031   0.084697  -6.364 1.96e-10 ***
+## ager&gt;65            -0.418331   0.123752  -3.380 0.000724 ***
+## marital2Married    -0.339121   0.049524  -6.848 7.51e-12 ***
+## marital2Widowed    -0.303743   0.128926  -2.356 0.018475 *  
+## marital2Divorced   -0.202693   0.058374  -3.472 0.000516 ***
+## marital2Separated   0.091202   0.075876   1.202 0.229369    
+## marital288         -1.103899   0.323893  -3.408 0.000654 ***
+## hincome7500-14999  -0.047715   0.064419  -0.741 0.458876    
+## hincome15000-24999  0.155844   0.063066   2.471 0.013469 *  
+## hincome25000-34999 -0.006246   0.065375  -0.096 0.923888    
+## hincome35000-49999 -0.004058   0.064333  -0.063 0.949703    
+## hincome50000-74999  0.075756   0.066247   1.144 0.252817    
+## hincome&gt;75000       0.115760   0.066328   1.745 0.080938 .  
+## regionMidwest      -0.082600   0.051593  -1.601 0.109382    
+## regionSouth        -0.099756   0.049610  -2.011 0.044346 *  
+## regionWest          0.016180   0.051131   0.316 0.751671    
+## msaSuburban        -0.112620   0.035320  -3.189 0.001430 ** 
+## msaRural           -0.163056   0.051942  -3.139 0.001694 ** 
+## direlRelative      -0.091262   0.072988  -1.250 0.211166    
+## direlAcquain       -0.076494   0.056005  -1.366 0.171987    
+## direlStranger      -0.359316   0.058777  -6.113 9.76e-10 ***
+## weaponN             0.176383   0.094881   1.859 0.063029 .  
+## weapcatFirearm     -0.666780   0.079853  -8.350  &lt; 2e-16 ***
+## weapcatKnife       -0.075118   0.080479  -0.933 0.350620    
 ## weapcatOther              NA         NA      NA       NA    
-## newoffRob          -1.075517   0.097327 -11.051  &lt; 2e-16 ***
-## newoffAssault1     -1.023701   0.109611  -9.339  &lt; 2e-16 ***
-## newoffAssault2     -0.770786   0.080947  -9.522  &lt; 2e-16 ***
-## newoffTheft        -0.980545   0.150011  -6.536 6.30e-11 ***
-## injuryY            -1.287219   0.054942 -23.429  &lt; 2e-16 ***
-## treatmentY          0.894670   0.063915  13.998  &lt; 2e-16 ***
+## newoffRob          -1.098069   0.098264 -11.175  &lt; 2e-16 ***
+## newoffAssault1     -1.005721   0.110526  -9.099  &lt; 2e-16 ***
+## newoffAssault2     -0.758432   0.082154  -9.232  &lt; 2e-16 ***
+## newoffTheft        -0.858717   0.151242  -5.678 1.36e-08 ***
+## injuryY            -1.298717   0.055062 -23.586  &lt; 2e-16 ***
+## treatmentY          0.844417   0.064079  13.178  &lt; 2e-16 ***
 ## treatmentSelf             NA         NA      NA       NA    
-## locationrNear       0.492533   0.056302   8.748  &lt; 2e-16 ***
-## locationrPublic     0.637307   0.041678  15.291  &lt; 2e-16 ***
-## locationrSchool     1.118915   0.063789  17.541  &lt; 2e-16 ***
+## locationrNear       0.506585   0.056238   9.008  &lt; 2e-16 ***
+## locationrPublic     0.622030   0.041611  14.949  &lt; 2e-16 ***
+## locationrSchool     1.118878   0.063532  17.611  &lt; 2e-16 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
-##     Null deviance: 26201  on 18946  degrees of freedom
-## Residual deviance: 23410  on 18905  degrees of freedom
-## AIC: 23494
+##     Null deviance: 26205  on 18946  degrees of freedom
+## Residual deviance: 23385  on 18905  degrees of freedom
+## AIC: 23469
 ## 
 ## Number of Fisher Scoring iterations: 4</code></pre>
 <p>Not all the factors are relevant to this model, so I fit a more parisimonious model using stepwise regression:</p>
 <pre class="r"><code>fit.red = stepAIC(fit, direction = &quot;both&quot;)</code></pre>
-<pre><code>## Start:  AIC=23493.79
+<pre><code>## Start:  AIC=23468.5
 ## notify ~ gender + race1r + ager + marital2 + hincome + region + 
 ##     msa + direl + weapon + weapcat + newoff + injury + treatment + 
 ##     locationr
 ## 
 ## 
-## Step:  AIC=23493.79
+## Step:  AIC=23468.5
 ## notify ~ gender + race1r + ager + marital2 + hincome + region + 
 ##     msa + direl + weapon + weapcat + newoff + treatment + locationr
 ## 
 ## 
-## Step:  AIC=23493.79
+## Step:  AIC=23468.5
 ## notify ~ gender + race1r + ager + marital2 + hincome + region + 
 ##     msa + direl + weapcat + newoff + treatment + locationr
 ## 
 ##             Df Deviance   AIC
-## &lt;none&gt;            23410 23494
-## - region     3    23422 23500
-## - msa        2    23421 23501
-## - hincome    6    23430 23502
-## - race1r     2    23430 23510
-## - gender     1    23460 23542
-## - direl      3    23469 23547
-## - marital2   5    23475 23549
-## - weapcat    3    23523 23601
-## - ager       7    23545 23615
-## - newoff     4    23545 23621
-## - locationr  3    23818 23896
-## - treatment  2    24028 24108</code></pre>
+## &lt;none&gt;            23384 23468
+## - region     3    23395 23473
+## - hincome    6    23404 23476
+## - msa        2    23399 23479
+## - race1r     2    23414 23494
+## - gender     1    23440 23522
+## - direl      3    23449 23527
+## - marital2   5    23458 23532
+## - ager       7    23498 23568
+## - weapcat    3    23503 23581
+## - newoff     4    23516 23592
+## - locationr  3    23789 23867
+## - treatment  2    24025 24105</code></pre>
 <pre class="r"><code>summary(fit.red)</code></pre>
 <pre><code>## 
 ## Call:
@@ -156,60 +176,60 @@ summary(fit)</code></pre>
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -2.3303  -1.0819   0.5588   1.0285   2.3462  
+## -2.3200  -1.0796   0.5669   1.0253   2.3516  
 ## 
 ## Coefficients:
 ##                     Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept)         1.813434   0.133047  13.630  &lt; 2e-16 ***
-## genderFemale       -0.244093   0.034467  -7.082 1.42e-12 ***
-## race1rBlack        -0.155207   0.050206  -3.091  0.00199 ** 
-## race1rOther         0.213451   0.071863   2.970  0.00298 ** 
-## ager15-17          -0.418004   0.073751  -5.668 1.45e-08 ***
-## ager18-20          -0.419685   0.077751  -5.398 6.75e-08 ***
-## ager21-24          -0.553356   0.078080  -7.087 1.37e-12 ***
-## ager25-34          -0.811630   0.073532 -11.038  &lt; 2e-16 ***
-## ager35-49          -0.731066   0.075850  -9.638  &lt; 2e-16 ***
-## ager50-64          -0.646124   0.084493  -7.647 2.06e-14 ***
-## ager&gt;65            -0.566580   0.124971  -4.534 5.80e-06 ***
-## marital2Married    -0.329264   0.049152  -6.699 2.10e-11 ***
-## marital2Widowed    -0.340034   0.128091  -2.655  0.00794 ** 
-## marital2Divorced   -0.179173   0.057941  -3.092  0.00199 ** 
-## marital2Separated   0.105011   0.074931   1.401  0.16108    
-## marital288         -0.604095   0.301250  -2.005  0.04493 *  
-## hincome7500-14999  -0.061207   0.064228  -0.953  0.34061    
-## hincome15000-24999  0.134294   0.062912   2.135  0.03279 *  
-## hincome25000-34999  0.001899   0.065167   0.029  0.97675    
-## hincome35000-49999 -0.023227   0.064174  -0.362  0.71740    
-## hincome50000-74999  0.062432   0.066031   0.945  0.34441    
-## hincome&gt;75000       0.127329   0.066416   1.917  0.05522 .  
-## regionMidwest      -0.054561   0.051488  -1.060  0.28929    
-## regionSouth        -0.093881   0.049452  -1.898  0.05764 .  
-## regionWest          0.043324   0.050901   0.851  0.39468    
-## msaSuburban        -0.100502   0.035318  -2.846  0.00443 ** 
-## msaRural           -0.146621   0.051638  -2.839  0.00452 ** 
-## direlRelative      -0.006112   0.072953  -0.084  0.93324    
-## direlAcquain       -0.046835   0.055944  -0.837  0.40250    
-## direlStranger      -0.318311   0.058582  -5.434 5.52e-08 ***
-## weapcatFirearm     -0.800412   0.090762  -8.819  &lt; 2e-16 ***
-## weapcatKnife       -0.200125   0.094535  -2.117  0.03426 *  
-## weapcatOther       -0.131589   0.094475  -1.393  0.16367    
-## newoffRob          -1.075517   0.097327 -11.051  &lt; 2e-16 ***
-## newoffAssault1     -1.023701   0.109611  -9.339  &lt; 2e-16 ***
-## newoffAssault2     -0.770786   0.080947  -9.522  &lt; 2e-16 ***
-## newoffTheft        -0.980545   0.150011  -6.536 6.30e-11 ***
-## treatmentY         -0.392549   0.044601  -8.801  &lt; 2e-16 ***
-## treatmentSelf      -1.287219   0.054942 -23.429  &lt; 2e-16 ***
-## locationrNear       0.492533   0.056302   8.748  &lt; 2e-16 ***
-## locationrPublic     0.637307   0.041678  15.291  &lt; 2e-16 ***
-## locationrSchool     1.118915   0.063789  17.541  &lt; 2e-16 ***
+## (Intercept)         1.817735   0.134646  13.500  &lt; 2e-16 ***
+## genderFemale       -0.258509   0.034571  -7.478 7.56e-14 ***
+## race1rBlack        -0.200679   0.050359  -3.985 6.75e-05 ***
+## race1rOther         0.238371   0.072851   3.272 0.001068 ** 
+## ager15-17          -0.358226   0.072620  -4.933 8.10e-07 ***
+## ager18-20          -0.338447   0.077342  -4.376 1.21e-05 ***
+## ager21-24          -0.480199   0.077702  -6.180 6.41e-10 ***
+## ager25-34          -0.722749   0.073012  -9.899  &lt; 2e-16 ***
+## ager35-49          -0.647997   0.075563  -8.576  &lt; 2e-16 ***
+## ager50-64          -0.539031   0.084697  -6.364 1.96e-10 ***
+## ager&gt;65            -0.418331   0.123752  -3.380 0.000724 ***
+## marital2Married    -0.339121   0.049524  -6.848 7.51e-12 ***
+## marital2Widowed    -0.303743   0.128926  -2.356 0.018475 *  
+## marital2Divorced   -0.202693   0.058374  -3.472 0.000516 ***
+## marital2Separated   0.091202   0.075876   1.202 0.229369    
+## marital288         -1.103899   0.323893  -3.408 0.000654 ***
+## hincome7500-14999  -0.047715   0.064419  -0.741 0.458876    
+## hincome15000-24999  0.155844   0.063066   2.471 0.013469 *  
+## hincome25000-34999 -0.006246   0.065375  -0.096 0.923888    
+## hincome35000-49999 -0.004058   0.064333  -0.063 0.949703    
+## hincome50000-74999  0.075756   0.066247   1.144 0.252817    
+## hincome&gt;75000       0.115760   0.066328   1.745 0.080938 .  
+## regionMidwest      -0.082600   0.051593  -1.601 0.109382    
+## regionSouth        -0.099756   0.049610  -2.011 0.044346 *  
+## regionWest          0.016180   0.051131   0.316 0.751671    
+## msaSuburban        -0.112620   0.035320  -3.189 0.001430 ** 
+## msaRural           -0.163056   0.051942  -3.139 0.001694 ** 
+## direlRelative      -0.091262   0.072988  -1.250 0.211166    
+## direlAcquain       -0.076494   0.056005  -1.366 0.171987    
+## direlStranger      -0.359316   0.058777  -6.113 9.76e-10 ***
+## weapcatFirearm     -0.843163   0.091170  -9.248  &lt; 2e-16 ***
+## weapcatKnife       -0.251501   0.094664  -2.657 0.007889 ** 
+## weapcatOther       -0.176383   0.094881  -1.859 0.063029 .  
+## newoffRob          -1.098069   0.098264 -11.175  &lt; 2e-16 ***
+## newoffAssault1     -1.005721   0.110526  -9.099  &lt; 2e-16 ***
+## newoffAssault2     -0.758432   0.082154  -9.232  &lt; 2e-16 ***
+## newoffTheft        -0.858717   0.151242  -5.678 1.36e-08 ***
+## treatmentY         -0.454300   0.044659 -10.173  &lt; 2e-16 ***
+## treatmentSelf      -1.298717   0.055062 -23.586  &lt; 2e-16 ***
+## locationrNear       0.506585   0.056238   9.008  &lt; 2e-16 ***
+## locationrPublic     0.622030   0.041611  14.949  &lt; 2e-16 ***
+## locationrSchool     1.118878   0.063532  17.611  &lt; 2e-16 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
-##     Null deviance: 26201  on 18946  degrees of freedom
-## Residual deviance: 23410  on 18905  degrees of freedom
-## AIC: 23494
+##     Null deviance: 26205  on 18946  degrees of freedom
+## Residual deviance: 23385  on 18905  degrees of freedom
+## AIC: 23469
 ## 
 ## Number of Fisher Scoring iterations: 4</code></pre>
 <p>Assessing model accuracy:</p>
@@ -218,8 +238,8 @@ test.class = ifelse(test.prediction &gt; 0.5, &quot;N&quot;, &quot;Y&quot;)
 table(test.class, data.test$notify) #read: horizontal label is truth, vertical label predicted</code></pre>
 <pre><code>##           
 ## test.class    Y    N
-##          N  390 1090
-##          Y 1894 1363</code></pre>
+##          N  383 1087
+##          Y 1885 1382</code></pre>
 <pre class="r"><code>(Accuracy = (1842 + 1113) / (1842 + 1113 + 376 + 1406))</code></pre>
 <pre><code>## [1] 0.6238125</code></pre>
 <p>We see that the accuracy of this model is 0.6238125. In the final model, all explanatory variables were included except <strong>injury</strong> and <strong>weapon</strong>.</p>
@@ -236,13 +256,13 @@ table(test.class, data.test$notify) #read: horizontal label is truth, vertical l
 ## 
 ## No pre-processing
 ## Resampling: Cross-Validated (10 fold, repeated 3 times) 
-## Summary of sample sizes: 21315, 21316, 21316, 21316, 21315, 21315, ... 
+## Summary of sample sizes: 21316, 21316, 21316, 21316, 21316, 21315, ... 
 ## Resampling results across tuning parameters:
 ## 
-##   cp           Accuracy   Kappa     
-##   0.002678093  0.6419527  0.27790589
-##   0.030842707  0.6165770  0.21756106
-##   0.056299470  0.5582651  0.07344444
+##   cp           Accuracy   Kappa    
+##   0.002678093  0.6399245  0.2749187
+##   0.030842707  0.6209112  0.2290234
+##   0.056299470  0.5751873  0.1154732
 ## 
 ## Accuracy was used to select the optimal model using  the largest value.
 ## The final value used for the model was cp = 0.002678093.</code></pre>
@@ -256,8 +276,8 @@ test.class.2 = ifelse(prediction.2[, 1] &gt; 0.5, &quot;Y&quot;, &quot;N&quot;)
 table(test.class.2, data.test$notify)</code></pre>
 <pre><code>##             
 ## test.class.2    Y    N
-##            N  917 1710
-##            Y 1367  743</code></pre>
+##            N  873 1714
+##            Y 1395  755</code></pre>
 <pre class="r"><code>(Accuracy.2 = (1328 + 1751) / (1328 + 1751 + 890 + 768))</code></pre>
 <pre><code>## [1] 0.6499894</code></pre>
 <p>The decision tree performs only marginally better than logistic regression, with accuracy at 0.6499894. Not much meaningful information can be drawn from the way outcomes split.</p>
