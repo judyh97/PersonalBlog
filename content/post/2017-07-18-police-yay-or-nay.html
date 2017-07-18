@@ -1,0 +1,268 @@
+<!-- BLOGDOWN-HEAD -->
+<!-- /BLOGDOWN-HEAD -->
+
+
+<p>Fans of anime will be familiar with Gen Urobuchi’s <em>Psycho-Pass</em>. In an authoritarian future dystopia, aggregated personality data and background information are used to gauge the probability of a citizen committing a crime. With the help of omnipresent public sensors that continuously scan the mental states of every passing citizen, authorities are alerted whenever excessive crime probability ratings are detected, whereafter officers are dispatched to make premature arrests. This concept can also be found in <em>Minority Report</em> (which i watched on the plane to Cape Town).</p>
+<p>A future in which we can accurately predict outcomes in crime and victimization — is that possible? With machine learning, perhaps very much so. Here, I take a stab at it.</p>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>I’ll be using the National Crime Victimization Survey (NCVS), which is administered by the Bureau of Justice Statistics in the United States. This survey collects criminal victimization data annually from a representative sample of about 160,000 persons interviewed each year. The <a href="https://www.bjs.gov/index.cfm?ty=dcdetail&amp;iid=245">NCVS</a> provides the largest national forum for victims to describe the impact of crime and characteristics of violent offenders.</p>
+<p>One key finding of the survey was that many crimes went unreported. Why is that so, and what factors surrounding the crime make it more likely for the victim to not make a police report? By analyzing both the characteristics and consequences of criminal victimization cases from 1995-2015, I seek to answer this question.</p>
+</div>
+<div id="the-data" class="section level1">
+<h1>The Data</h1>
+<p>Data is from the <a href="https://www.bjs.gov/developer/ncvs/index.cfm">Personal Victimization dataset</a> for 1993-2015. The cleaned dataset has 23684 datapoints spanning 12 years.</p>
+<p>Let’s take a look at the variables being analyzed:</p>
+<pre><code>##  [1] &quot;year&quot;      &quot;gender&quot;    &quot;race1r&quot;    &quot;hispanic&quot;  &quot;ethnic1r&quot; 
+##  [6] &quot;ager&quot;      &quot;marital2&quot;  &quot;hincome&quot;   &quot;popsize&quot;   &quot;region&quot;   
+## [11] &quot;msa&quot;       &quot;direl&quot;     &quot;weapon&quot;    &quot;weapcat&quot;   &quot;newcrime&quot; 
+## [16] &quot;newoff&quot;    &quot;injury&quot;    &quot;treatment&quot; &quot;locationr&quot; &quot;notify&quot;</code></pre>
+<p>Our initial list of explanatory variables, all categorical except for year: | Variable | Explanation | | ——– | :———: | | year | Year of data collection | | gender | Gender of respondent | | race1r | Race of respondent | | hispanic | Hispanic origin | | ethnic1r | Race/Hispanic origin | | ager | Age of respondent | | marital2 | Marital Status | | hincome | Household Income | | popsize | Population size of crime location | | region | Region of crime location | | msa | Urban, Suburban, Rural | | direl | Victim-offender Relationship | | weapon | Weapon Use | | weapcat | Weapon Type | | newcrime | Aggregate Type of crime, i.e. Violent Victimization/ Theft | | newoff | Type of crime | | injury | Injured/ Not injured | | treatment | Medical Treatment for injuries | | locationr | Location of Incident, i.e School, Public, Home… |</p>
+<p>The dependent variable we’re analyzing is <strong>notify</strong>: whether the crime was reported to the police or not.</p>
+</div>
+<div id="explanatory-analysis" class="section level1">
+<h1>Explanatory Analysis</h1>
+<p>I begin by plotting each explanatory variable as a function of <strong>notify</strong>.</p>
+<p><img src="2017-07-18-police-yay-or-nay_files/figure-html/unnamed-chunk-2-1.png" width="672" /><img src="2017-07-18-police-yay-or-nay_files/figure-html/unnamed-chunk-2-2.png" width="672" /><img src="2017-07-18-police-yay-or-nay_files/figure-html/unnamed-chunk-2-3.png" width="672" /><img src="2017-07-18-police-yay-or-nay_files/figure-html/unnamed-chunk-2-4.png" width="672" /><img src="2017-07-18-police-yay-or-nay_files/figure-html/unnamed-chunk-2-5.png" width="672" /><img src="2017-07-18-police-yay-or-nay_files/figure-html/unnamed-chunk-2-6.png" width="672" /><img src="2017-07-18-police-yay-or-nay_files/figure-html/unnamed-chunk-2-7.png" width="672" /><img src="2017-07-18-police-yay-or-nay_files/figure-html/unnamed-chunk-2-8.png" width="672" /><img src="2017-07-18-police-yay-or-nay_files/figure-html/unnamed-chunk-2-9.png" width="672" /><img src="2017-07-18-police-yay-or-nay_files/figure-html/unnamed-chunk-2-10.png" width="672" /><img src="2017-07-18-police-yay-or-nay_files/figure-html/unnamed-chunk-2-11.png" width="672" /><img src="2017-07-18-police-yay-or-nay_files/figure-html/unnamed-chunk-2-12.png" width="672" /><img src="2017-07-18-police-yay-or-nay_files/figure-html/unnamed-chunk-2-13.png" width="672" /><img src="2017-07-18-police-yay-or-nay_files/figure-html/unnamed-chunk-2-14.png" width="672" /><img src="2017-07-18-police-yay-or-nay_files/figure-html/unnamed-chunk-2-15.png" width="672" /><img src="2017-07-18-police-yay-or-nay_files/figure-html/unnamed-chunk-2-16.png" width="672" /><img src="2017-07-18-police-yay-or-nay_files/figure-html/unnamed-chunk-2-17.png" width="672" /><img src="2017-07-18-police-yay-or-nay_files/figure-html/unnamed-chunk-2-18.png" width="672" /><img src="2017-07-18-police-yay-or-nay_files/figure-html/unnamed-chunk-2-19.png" width="672" /></p>
+<p>It appears that all the explanatory variables have some influence on <strong>notify</strong> except for <strong>popsize</strong>, <strong>newcrime</strong> and <strong>year</strong>. These variables will be excluded from all subsequent analyses.</p>
+</div>
+<div id="hypothesis" class="section level1">
+<h1>Hypothesis</h1>
+<p>I hypothesize that severity of crime may be correlated to whether it is reported; severity is indicated by <strong>weapon</strong>, <strong>weapcat</strong>, <strong>newoff</strong>, <strong>injury</strong> and <strong>treatment</strong>. For example, we see above that crimes involving weapons, especially firearms, are more likely to be reported.</p>
+<p>For circumstances of crime, initial observations are counterintuitive: crimes in homes are more likely to be reported, and intimates are more likely to be reported than acquaintances.</p>
+<p>Characteristics of the victim, such as age, marital status, household income and gender seems to have some effect as well.</p>
+</div>
+<div id="experiment-analysis" class="section level1">
+<h1>Experiment/ Analysis</h1>
+<p>I begin by splitting the data 80:20 into training and testing sets; the training set will be used to train the model, while the testing set will be used to assess the model accuracy.</p>
+<pre class="r"><code>index = sample(1:nrow(data.clean), round(0.8 *nrow(data.clean)))
+data.train = data.clean[index, ]
+data.test = data.clean[-index, ]</code></pre>
+<div id="logistic-regression" class="section level2">
+<h2>Logistic Regression</h2>
+<p>Using the chosen explanatory variables, I first fit a logistic regression.</p>
+<pre class="r"><code>totest = &quot;gender + race1r + ager + marital2 + hincome + region + msa + direl + weapon + weapcat + newoff + injury + treatment + locationr&quot;
+names.totest = as.formula(paste(&quot;notify ~&quot;, totest))
+fit = glm(names.totest, data = data.train, family = binomial)
+summary(fit)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = names.totest, family = binomial, data = data.train)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.3449  -1.0755   0.5532   1.0270   2.3378  
+## 
+## Coefficients: (2 not defined because of singularities)
+##                     Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)         1.551826   0.160217   9.686  &lt; 2e-16 ***
+## genderFemale       -0.271018   0.034549  -7.844 4.35e-15 ***
+## race1rBlack        -0.153335   0.050242  -3.052  0.00227 ** 
+## race1rOther         0.199078   0.072623   2.741  0.00612 ** 
+## ager15-17          -0.380550   0.073480  -5.179 2.23e-07 ***
+## ager18-20          -0.372987   0.077960  -4.784 1.72e-06 ***
+## ager21-24          -0.534028   0.078004  -6.846 7.58e-12 ***
+## ager25-34          -0.761969   0.073702 -10.339  &lt; 2e-16 ***
+## ager35-49          -0.698626   0.076073  -9.184  &lt; 2e-16 ***
+## ager50-64          -0.597322   0.085280  -7.004 2.48e-12 ***
+## ager&gt;65            -0.461164   0.127257  -3.624  0.00029 ***
+## marital2Married    -0.300153   0.049520  -6.061 1.35e-09 ***
+## marital2Widowed    -0.314888   0.130291  -2.417  0.01566 *  
+## marital2Divorced   -0.174928   0.058271  -3.002  0.00268 ** 
+## marital2Separated   0.072271   0.075020   0.963  0.33537    
+## marital288         -0.582028   0.308865  -1.884  0.05951 .  
+## hincome7500-14999  -0.047129   0.064568  -0.730  0.46544    
+## hincome15000-24999  0.137027   0.063043   2.174  0.02974 *  
+## hincome25000-34999  0.003229   0.065072   0.050  0.96042    
+## hincome35000-49999 -0.040154   0.064106  -0.626  0.53107    
+## hincome50000-74999  0.077727   0.066129   1.175  0.23984    
+## hincome&gt;75000       0.116189   0.066452   1.748  0.08038 .  
+## regionMidwest      -0.047333   0.051530  -0.919  0.35834    
+## regionSouth        -0.106186   0.049434  -2.148  0.03171 *  
+## regionWest          0.062218   0.051024   1.219  0.22269    
+## msaSuburban        -0.118969   0.035335  -3.367  0.00076 ***
+## msaRural           -0.125085   0.051750  -2.417  0.01565 *  
+## direlRelative      -0.098923   0.072447  -1.365  0.17211    
+## direlAcquain       -0.035553   0.055657  -0.639  0.52296    
+## direlStranger      -0.299170   0.058404  -5.122 3.02e-07 ***
+## weaponN             0.232098   0.093646   2.478  0.01320 *  
+## weapcatFirearm     -0.652598   0.079664  -8.192 2.57e-16 ***
+## weapcatKnife       -0.019816   0.080091  -0.247  0.80458    
+## weapcatOther              NA         NA      NA       NA    
+## newoffRob          -1.097637   0.096911 -11.326  &lt; 2e-16 ***
+## newoffAssault1     -0.968889   0.108995  -8.889  &lt; 2e-16 ***
+## newoffAssault2     -0.767632   0.080808  -9.499  &lt; 2e-16 ***
+## newoffTheft        -0.956148   0.150990  -6.333 2.41e-10 ***
+## injuryY            -1.263060   0.054802 -23.048  &lt; 2e-16 ***
+## treatmentY          0.866081   0.063665  13.604  &lt; 2e-16 ***
+## treatmentSelf             NA         NA      NA       NA    
+## locationrNear       0.528345   0.056266   9.390  &lt; 2e-16 ***
+## locationrPublic     0.618025   0.041508  14.889  &lt; 2e-16 ***
+## locationrSchool     1.146434   0.064365  17.811  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 26210  on 18946  degrees of freedom
+## Residual deviance: 23378  on 18905  degrees of freedom
+## AIC: 23462
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<p>Not all the factors are relevant to this model, so I fit a more parisimonious model using stepwise regression:</p>
+<pre class="r"><code>fit.red = stepAIC(fit, direction = &quot;both&quot;)</code></pre>
+<pre><code>## Start:  AIC=23462.17
+## notify ~ gender + race1r + ager + marital2 + hincome + region + 
+##     msa + direl + weapon + weapcat + newoff + injury + treatment + 
+##     locationr
+## 
+## 
+## Step:  AIC=23462.17
+## notify ~ gender + race1r + ager + marital2 + hincome + region + 
+##     msa + direl + weapon + weapcat + newoff + treatment + locationr
+## 
+## 
+## Step:  AIC=23462.17
+## notify ~ gender + race1r + ager + marital2 + hincome + region + 
+##     msa + direl + weapcat + newoff + treatment + locationr
+## 
+##             Df Deviance   AIC
+## &lt;none&gt;            23378 23462
+## - hincome    6    23398 23470
+## - msa        2    23391 23471
+## - region     3    23395 23473
+## - race1r     2    23397 23477
+## - marital2   5    23430 23504
+## - direl      3    23430 23508
+## - gender     1    23440 23522
+## - ager       7    23502 23572
+## - weapcat    3    23503 23581
+## - newoff     4    23516 23592
+## - locationr  3    23790 23868
+## - treatment  2    23976 24056</code></pre>
+<pre class="r"><code>summary(fit.red)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = notify ~ gender + race1r + ager + marital2 + hincome + 
+##     region + msa + direl + weapcat + newoff + treatment + locationr, 
+##     family = binomial, data = data.train)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.3449  -1.0755   0.5532   1.0270   2.3378  
+## 
+## Coefficients:
+##                     Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)         1.783924   0.133507  13.362  &lt; 2e-16 ***
+## genderFemale       -0.271018   0.034549  -7.844 4.35e-15 ***
+## race1rBlack        -0.153335   0.050242  -3.052  0.00227 ** 
+## race1rOther         0.199078   0.072623   2.741  0.00612 ** 
+## ager15-17          -0.380550   0.073480  -5.179 2.23e-07 ***
+## ager18-20          -0.372987   0.077960  -4.784 1.72e-06 ***
+## ager21-24          -0.534028   0.078004  -6.846 7.58e-12 ***
+## ager25-34          -0.761969   0.073702 -10.339  &lt; 2e-16 ***
+## ager35-49          -0.698626   0.076073  -9.184  &lt; 2e-16 ***
+## ager50-64          -0.597322   0.085280  -7.004 2.48e-12 ***
+## ager&gt;65            -0.461164   0.127257  -3.624  0.00029 ***
+## marital2Married    -0.300153   0.049520  -6.061 1.35e-09 ***
+## marital2Widowed    -0.314888   0.130291  -2.417  0.01566 *  
+## marital2Divorced   -0.174928   0.058271  -3.002  0.00268 ** 
+## marital2Separated   0.072271   0.075020   0.963  0.33537    
+## marital288         -0.582028   0.308865  -1.884  0.05951 .  
+## hincome7500-14999  -0.047129   0.064568  -0.730  0.46544    
+## hincome15000-24999  0.137027   0.063043   2.174  0.02974 *  
+## hincome25000-34999  0.003229   0.065072   0.050  0.96042    
+## hincome35000-49999 -0.040154   0.064106  -0.626  0.53107    
+## hincome50000-74999  0.077727   0.066129   1.175  0.23984    
+## hincome&gt;75000       0.116189   0.066452   1.748  0.08038 .  
+## regionMidwest      -0.047333   0.051530  -0.919  0.35834    
+## regionSouth        -0.106186   0.049434  -2.148  0.03171 *  
+## regionWest          0.062218   0.051024   1.219  0.22269    
+## msaSuburban        -0.118969   0.035335  -3.367  0.00076 ***
+## msaRural           -0.125085   0.051750  -2.417  0.01565 *  
+## direlRelative      -0.098923   0.072447  -1.365  0.17211    
+## direlAcquain       -0.035553   0.055657  -0.639  0.52296    
+## direlStranger      -0.299170   0.058404  -5.122 3.02e-07 ***
+## weapcatFirearm     -0.884696   0.090899  -9.733  &lt; 2e-16 ***
+## weapcatKnife       -0.251914   0.093934  -2.682  0.00732 ** 
+## weapcatOther       -0.232098   0.093646  -2.478  0.01320 *  
+## newoffRob          -1.097637   0.096911 -11.326  &lt; 2e-16 ***
+## newoffAssault1     -0.968889   0.108995  -8.889  &lt; 2e-16 ***
+## newoffAssault2     -0.767632   0.080808  -9.499  &lt; 2e-16 ***
+## newoffTheft        -0.956148   0.150990  -6.333 2.41e-10 ***
+## treatmentY         -0.396980   0.044451  -8.931  &lt; 2e-16 ***
+## treatmentSelf      -1.263060   0.054802 -23.048  &lt; 2e-16 ***
+## locationrNear       0.528345   0.056266   9.390  &lt; 2e-16 ***
+## locationrPublic     0.618025   0.041508  14.889  &lt; 2e-16 ***
+## locationrSchool     1.146434   0.064365  17.811  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 26210  on 18946  degrees of freedom
+## Residual deviance: 23378  on 18905  degrees of freedom
+## AIC: 23462
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<p>Assessing model accuracy:</p>
+<pre class="r"><code>test.prediction = predict(fit.red, newdata = data.test)
+test.class = ifelse(test.prediction &gt; 0.5, &quot;N&quot;, &quot;Y&quot;)
+table(test.class, data.test$notify) #read: horizontal label is truth, vertical label predicted</code></pre>
+<pre><code>##           
+## test.class    Y    N
+##          N  383 1132
+##          Y 1863 1359</code></pre>
+<pre class="r"><code>(Accuracy = (1842 + 1113) / (1842 + 1113 + 376 + 1406))</code></pre>
+<pre><code>## [1] 0.6238125</code></pre>
+<p>We see that the accuracy of this model is 0.6238125. In the final model, all explanatory variables were included except <strong>injury</strong> and <strong>weapon</strong>.</p>
+<p>Can we improve on this accuracy by using a decision tree?</p>
+</div>
+<div id="decision-tree" class="section level2">
+<h2>Decision Tree</h2>
+<pre class="r"><code>(fit.tree = train(names.totest, data = data.clean, method = &quot;rpart&quot;, trControl = trainControl(method = &quot;repeatedcv&quot;, repeats = 3)))</code></pre>
+<pre><code>## CART 
+## 
+## 23684 samples
+##    14 predictor
+##     2 classes: &#39;Y&#39;, &#39;N&#39; 
+## 
+## No pre-processing
+## Resampling: Cross-Validated (10 fold, repeated 3 times) 
+## Summary of sample sizes: 21315, 21316, 21316, 21316, 21316, 21316, ... 
+## Resampling results across tuning parameters:
+## 
+##   cp           Accuracy   Kappa     
+##   0.002678093  0.6430503  0.28054187
+##   0.030842707  0.6183641  0.22204262
+##   0.056299470  0.5618959  0.08447629
+## 
+## Accuracy was used to select the optimal model using  the largest value.
+## The final value used for the model was cp = 0.002678093.</code></pre>
+<p>Using cross-validation, we see that an good complexity level to use in fitting a decision tree is cp = 0.002678093. I refit the decision tree:</p>
+<pre class="r"><code>fit.tree.2 = rpart(names.totest, data = data.train, control = rpart.control(cp = 0.002678093198))
+fancyRpartPlot(fit.tree.2)</code></pre>
+<p><img src="2017-07-18-police-yay-or-nay_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>Assessing accuracy:</p>
+<pre class="r"><code>prediction.2 = predict(fit.tree.2, data.test)
+test.class.2 = ifelse(prediction.2[, 1] &gt; 0.5, &quot;Y&quot;, &quot;N&quot;)
+table(test.class.2, data.test$notify)</code></pre>
+<pre><code>##             
+## test.class.2    Y    N
+##            N  886 1686
+##            Y 1360  805</code></pre>
+<pre class="r"><code>(Accuracy.2 = (1328 + 1751) / (1328 + 1751 + 890 + 768))</code></pre>
+<pre><code>## [1] 0.6499894</code></pre>
+<p>The decision tree performs only marginally better than logistic regression, with accuracy at 0.6499894. Not much meaningful information can be drawn from the way outcomes split.</p>
+</div>
+</div>
+<div id="conclusions" class="section level1">
+<h1>Conclusions</h1>
+<p>Both the logistic regression and decision tree models do not perform well at predicting whether a victim will notify the police. However, seeing that explanatory variables may be highly interrelated, I could try feature engineering (e.g. relating <strong>marital2</strong> with <strong>gender</strong>, <strong>weapon</strong> with <strong>weapcat</strong>) or other machine learning algorithms such as neural networks.</p>
+<p><strong>SPOILER ALERT</strong></p>
+<p>In the last episode of <em>Psycho-Pass</em>, it is revealed that the crime coefficients are calculated by a hive mind made up of hundreds of brains… sounds awfully like neural networks to me!</p>
+<div class="figure">
+<img src="Sibyl_System.png" alt="Sibyl System" />
+<p class="caption">Sibyl System</p>
+</div>
+</div>

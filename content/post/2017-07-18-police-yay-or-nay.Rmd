@@ -1,0 +1,228 @@
+---
+title: 'Police: Yay or Nay?'
+author: ~
+date: '2017-07-18'
+slug: police-yay-or-nay
+categories: ["Projects"]
+tags: []
+---
+```{r setup, include = FALSE, warning = FALSE}
+library(readr)
+library(plyr)
+library(vcd)
+library(MASS)
+library(dplyr)
+library(rattle)
+library(vcdExtra)
+library(rpart)
+library(party)
+library(caret)
+data = read_csv("Data_cut.csv")
+
+#clean
+data.1 = data[!(data$hispanic == 88 | data$hincome == 88 | data$locationr == 5 | data$notify == 3 | data$notify == 8 | data$direl == 5 | data$direl == 6 | data$weapcat == 4 | data$weapcat == 5), ] 
+data.clean = data.1[complete.cases(data.1), ]
+
+#label 
+data.clean$race1r = as.factor(data.clean$race1r)
+data.clean$race1r = revalue(data.clean$race1r, c("1" = "White", "2" = "Black", "3" = "Other"))
+
+data.clean$hispanic = as.factor(data.clean$hispanic)
+data.clean$hispanic = revalue(data.clean$hispanic, c("1" = "Hispanic", "2" = "Non-His"))
+
+data.clean$gender = as.factor(data.clean$gender)
+data.clean$gender = revalue(data.clean$gender, c("1" = "Male", "2" = "Female"))
+
+data.clean$notify = as.factor(data.clean$notify)
+data.clean$notify = revalue(data.clean$notify, c("1" = "Y", "2" = "N"))
+
+data.clean$ethnic1r = as.factor(data.clean$ethnic1r)
+data.clean$ethnic1r = revalue(data.clean$ethnic1r, c("1" = "Non-His White", "2" = "Non-His Black", "3" = "Non-His Other", "4" = "Hispanic"))
+
+data.clean$ager = as.factor(data.clean$ager)
+data.clean$ager = revalue(data.clean$ager, c("1" = "12-14", "2" = "15-17", "3" = "18-20", "4" = "21-24", "5" = "25-34", "6" = "35-49", "7" = "50-64", "8" = ">65"))
+
+data.clean$marital2 = as.factor(data.clean$marital2)
+data.clean$marital2 = revalue(data.clean$marital2, c("1" = "NvrMarried", "2" = "Married", "3" = "Widowed", "4" = "Divorced", "5" = "Separated"))
+
+data.clean$hincome = as.factor(data.clean$hincome)
+data.clean$hincome = revalue(data.clean$hincome, c("1" = "<7500", "2" = "7500-14999", "3" = "15000-24999", "4" = "25000-34999", "5" = "35000-49999", "6" = "50000-74999", "7" = ">75000"))
+
+data.clean$popsize = as.factor(data.clean$popsize)
+data.clean$popsize = revalue(data.clean$popsize, c("0" = "NAP", "1" = "<100", "2" = "100-250", "3" = "250-500", "4" = "500-1000", "5" = ">1000"))
+
+data.clean$region = as.factor(data.clean$region)
+data.clean$region = revalue(data.clean$region, c("1" = "Northeast", "2" = "Midwest", "3" = "South", "4" = "West"))
+
+data.clean$msa = as.factor(data.clean$msa)
+data.clean$msa = revalue(data.clean$msa, c("1" = "Urban", "2" = "Suburban", "3" = "Rural"))
+
+data.clean$direl = as.factor(data.clean$direl)
+data.clean$direl = revalue(data.clean$direl, c("1" = "Intimate", "2" = "Relative", "3" = "Acquain", "4" = "Stranger"))
+
+data.clean$weapon = as.factor(data.clean$weapon)
+data.clean$weapon = revalue(data.clean$weapon, c("1" = "Y", "2" = "N", "3" = "DK"))
+
+data.clean$weapcat = as.factor(data.clean$weapcat)
+data.clean$weapcat = revalue(data.clean$weapcat, c("0" = "None", "1" = "Firearm", "2" = "Knife", "3" = "Other"))
+
+data.clean$newcrime = as.factor(data.clean$newcrime)
+data.clean$newcrime = revalue(data.clean$newcrime, c("1" = "Violent", "2" = "Theft"))
+
+data.clean$newoff = as.factor(data.clean$newoff)
+data.clean$newoff = revalue(data.clean$newoff, c("1" = "Sexual", "2" = "Rob", "3" = "Assault1", "4" = "Assault2", "5" = "Theft"))
+
+data.clean$injury = as.factor(data.clean$injury)
+data.clean$injury = revalue(data.clean$injury, c("0" = "N", "1" = "Y"))
+
+data.clean$treatment = as.factor(data.clean$treatment)
+data.clean$treatment = revalue(data.clean$treatment, c("0" = "N", "1" = "Y", "2" = "Self"))
+
+data.clean$locationr = as.factor(data.clean$locationr)
+data.clean$locationr = revalue(data.clean$locationr, c("1" = "Home", "2" = "Near", "3" = "Public", "4" = "School", "5" = "Other"))
+```
+
+Fans of anime will be familiar with Gen Urobuchi's *Psycho-Pass*. In an authoritarian future dystopia, aggregated personality data and background information are used to gauge the probability of a citizen committing a crime. With the help of omnipresent public sensors that continuously scan the mental states of every passing citizen, authorities are alerted whenever excessive crime probability ratings are detected, whereafter officers are dispatched to make premature arrests. This concept can also be found in *Minority Report* (which i watched on the plane to Cape Town). 
+
+A future in which we can accurately predict outcomes in crime and victimization — is that possible? With machine learning, perhaps very much so. Here, I take a stab at it. 
+
+#Introduction
+I'll be using the National Crime Victimization Survey (NCVS), which is administered by the Bureau of Justice Statistics in the United States. This survey collects criminal victimization data annually from a representative sample of about 160,000 persons interviewed each year. The [NCVS](https://www.bjs.gov/index.cfm?ty=dcdetail&iid=245) provides the largest national forum for victims to describe the impact of crime and characteristics of violent offenders. 
+
+One key finding of the survey was that many crimes went unreported. Why is that so, and what factors surrounding the crime make it more likely for the victim to not make a police report? By analyzing both the characteristics and consequences of criminal victimization cases from 1995-2015, I seek to answer this question. 
+
+#The Data 
+Data is from the [Personal Victimization dataset](https://www.bjs.gov/developer/ncvs/index.cfm) for 1993-2015. The cleaned dataset has 23684 datapoints spanning 12 years. 
+
+Let's take a look at the variables being analyzed: 
+```{r, echo = FALSE, warning = FALSE}
+names(data.clean)
+```
+
+Our initial list of explanatory variables, all categorical except for year: 
+| Variable | Explanation |
+| -------- | :---------: |
+| year | Year of data collection |
+| gender | Gender of respondent |
+| race1r | Race of respondent |
+| hispanic | Hispanic origin |
+| ethnic1r | Race/Hispanic origin |
+| ager | Age of respondent |
+| marital2 | Marital Status |
+| hincome | Household Income |
+| popsize | Population size of crime location |
+| region | Region of crime location |
+| msa | Urban, Suburban, Rural |
+| direl | Victim-offender Relationship |
+| weapon | Weapon Use |
+| weapcat | Weapon Type |
+| newcrime | Aggregate Type of crime, i.e. Violent Victimization/ Theft |
+| newoff | Type of crime |
+| injury | Injured/ Not injured |
+| treatment | Medical Treatment for injuries |
+| locationr | Location of Incident, i.e School, Public, Home... |
+
+The dependent variable we're analyzing is **notify**: whether the crime was reported to the police or not. 
+
+#Explanatory Analysis
+I begin by plotting each explanatory variable as a function of **notify**. 
+
+```{r, echo = FALSE, warning = FALSE}
+attach(data.clean)
+plot(gender, notify, main = "Notify VS Gender", xlab = "Gender", ylab = "Notify")
+plot(hispanic, notify, main = "Notify VS Hispanic", xlab = "Hispanic", ylab = "Notify")  
+plot(race1r, notify, main = "Notify VS Race", xlab = "Race", ylab = "Notify")
+plot(ethnic1r, notify, main = "Notify VS Ethnicity", xlab = "Ethnicity", ylab = "Notify")
+plot(ager, notify, main = "Notify VS Age", xlab = "Age", ylab = "Notify")
+plot(marital2, notify, main = "Notify VS MaritalStatus", xlab = "MaritalStatus", ylab = "Notify")
+plot(hincome, notify, main = "Notify VS Household Income", xlab = "Household Income", ylab = "Notify")
+plot(popsize, notify, main = "Notify VS PopnSize", xlab = "PopnSize", ylab = "Notify")
+plot(region, notify, main = "Notify VS Region", xlab = "Region", ylab = "Notify")
+plot(msa, notify, main = "Notify VS LocationType", xlab = "LocationType", ylab = "Notify")
+plot(locationr, notify, main = "Notify VS CrimeScene", xlab = "CrimeScene", ylab = "Notify")
+plot(direl, notify, main = "Notify VS Relation to Perpetrator", xlab = "Relation to Perpetrator", ylab = "Notify")
+plot(weapon, notify, main = "Notify VS Weapon", xlab = "Weapon", ylab = "Notify")
+plot(weapcat, notify, main = "Notify VS Weapon Category", xlab = "Weapon Category", ylab = "Notify")
+plot(newcrime, notify, main = "Notify VS CrimeTypeAgg", xlab = "CrimeTypeAgg", ylab = "Notify")
+plot(newoff, notify, main = "Notify VS CrimeType", xlab = "CrimeType", ylab = "Notify")
+plot(injury, notify, main = "Notify VS Injury", xlab = "Injury", ylab = "Notify")
+plot(treatment, notify, main = "Notify VS Treatment", xlab = "Treatment", ylab = "Notify")
+plot(notify ~ year, data = data.clean, main = "Notify VS Year")
+```
+
+It appears that all the explanatory variables have some influence on **notify** except for **popsize**, **newcrime** and **year**. These variables will be excluded from all subsequent analyses. 
+
+#Hypothesis 
+I hypothesize that severity of crime may be correlated to whether it is reported; severity is  indicated by **weapon**, **weapcat**, **newoff**, **injury** and **treatment**. For example, we see above that crimes involving weapons, especially firearms, are more likely to be reported. 
+
+For circumstances of crime, initial observations are counterintuitive: crimes in homes are more likely to be reported, and intimates are more likely to be reported than acquaintances. 
+
+Characteristics of the victim, such as age, marital status, household income and gender seems to have some effect as well. 
+
+#Experiment/ Analysis 
+I begin by splitting the data 80:20 into training and testing sets; the training set will be used to train the model, while the testing set will be used to assess the model accuracy. 
+
+```{r}
+index = sample(1:nrow(data.clean), round(0.8 *nrow(data.clean)))
+data.train = data.clean[index, ]
+data.test = data.clean[-index, ]
+```
+
+##Logistic Regression
+Using the chosen explanatory variables, I first fit a logistic regression. 
+```{r}
+totest = "gender + race1r + ager + marital2 + hincome + region + msa + direl + weapon + weapcat + newoff + injury + treatment + locationr"
+names.totest = as.formula(paste("notify ~", totest))
+fit = glm(names.totest, data = data.train, family = binomial)
+summary(fit)
+```
+
+Not all the factors are relevant to this model, so I fit a more parisimonious model using stepwise regression: 
+```{r}
+fit.red = stepAIC(fit, direction = "both")
+summary(fit.red)
+```
+
+Assessing model accuracy: 
+```{r}
+test.prediction = predict(fit.red, newdata = data.test)
+test.class = ifelse(test.prediction > 0.5, "N", "Y")
+table(test.class, data.test$notify) #read: horizontal label is truth, vertical label predicted
+(Accuracy = (1842 + 1113) / (1842 + 1113 + 376 + 1406))
+```
+
+We see that the accuracy of this model is 0.6238125. In the final model, all explanatory variables were included except **injury** and **weapon**. 
+
+Can we improve on this accuracy by using a decision tree? 
+
+##Decision Tree 
+```{r}
+(fit.tree = train(names.totest, data = data.clean, method = "rpart", trControl = trainControl(method = "repeatedcv", repeats = 3)))
+
+```
+
+Using cross-validation, we see that an good complexity level to use in fitting a decision tree is cp = 0.002678093. I refit the decision tree: 
+```{r}
+fit.tree.2 = rpart(names.totest, data = data.train, control = rpart.control(cp = 0.002678093198))
+fancyRpartPlot(fit.tree.2)
+```
+
+Assessing accuracy: 
+```{r}
+prediction.2 = predict(fit.tree.2, data.test)
+test.class.2 = ifelse(prediction.2[, 1] > 0.5, "Y", "N")
+table(test.class.2, data.test$notify)
+(Accuracy.2 = (1328 + 1751) / (1328 + 1751 + 890 + 768))
+```
+
+The decision tree performs only marginally better than logistic regression, with accuracy at 0.6499894. Not much meaningful information can be drawn from the way outcomes split. 
+
+#Conclusions
+Both the logistic regression and decision tree models do not perform well at predicting whether a victim will notify the police. However, seeing that explanatory variables may be highly interrelated, I could try feature engineering (e.g. relating **marital2** with **gender**, **weapon** with **weapcat**) or other machine learning algorithms such as neural networks.  
+
+**SPOILER ALERT**
+
+In the last episode of *Psycho-Pass*, it is revealed that the crime coefficients are calculated by a hive mind made up of hundreds of brains... sounds awfully like neural networks to me!
+
+![Sibyl System](~/iX/Projects/Blog/content/post/Sibyl_System.png)
+
