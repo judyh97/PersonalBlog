@@ -100,27 +100,43 @@ names(data.clean)
 ```
 
 Our initial list of explanatory variables, all categorical except for year: 
-| Variable | Explanation |
-| -------- | :---------: |
-| year | Year of data collection |
-| gender | Gender of respondent |
-| race1r | Race of respondent |
-| hispanic | Hispanic origin |
-| ethnic1r | Race/Hispanic origin |
-| ager | Age of respondent |
-| marital2 | Marital Status |
-| hincome | Household Income |
-| popsize | Population size of crime location |
-| region | Region of crime location |
-| msa | Urban, Suburban, Rural |
-| direl | Victim-offender Relationship |
-| weapon | Weapon Use |
-| weapcat | Weapon Type |
-| newcrime | Aggregate Type of crime, i.e. Violent Victimization/ Theft |
-| newoff | Type of crime |
-| injury | Injured/ Not injured |
-| treatment | Medical Treatment for injuries |
-| locationr | Location of Incident, i.e School, Public, Home... |
+1. year | Year of data collection 
+
+2. gender | Gender of respondent 
+
+3. race1r | Race of respondent 
+
+4. hispanic | Hispanic origin 
+
+5. ethnic1r | Race/Hispanic origin 
+
+6. ager | Age of respondent 
+
+7. marital2 | Marital Status 
+
+8. hincome | Household Income 
+
+9. popsize | Population size of crime location 
+
+10. region | Region of crime location 
+
+11. msa | Urban, Suburban, Rural 
+
+12. direl | Victim-offender Relationship 
+
+13. weapon | Weapon Use 
+
+14. weapcat | Weapon Type 
+
+15. newcrime | Aggregate Type of crime, i.e. Violent Victimization/ Theft 
+
+16. newoff | Type of crime 
+
+17. injury | Injured/ Not injured 
+
+18. treatment | Medical Treatment for injuries 
+
+19. locationr | Location of Incident, i.e School, Public, Home... 
 
 The dependent variable we're analyzing is **notify**: whether the crime was reported to the police or not. 
 
